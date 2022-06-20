@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--code inserted by atvise-->
+    <script src="/webmi.js" type="text/javascript"></script>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>Babylon.js sample code</title>
+
+    <!-- Babylon.js -->
+    <script src="/babylonjs/babylon.js"></script>
+    <script src="/babylonjs/babylonjs.loaders.js"></script>
+
+    <style>
+        html,
+        body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="renderCanvas"></canvas>
+
+    <script src="/PumpStation/offline.js"></script>
+    <script>
+        offline({
+            message: 'T{This demo only works with an active internet connection}',
+        }).$on('reconnect', () => {
+            console.log('Reconnected, reloading frame');
+            window.location.reload();
+        });
+    </script>
+
+    <script>
+        var canvas = document.getElementById('renderCanvas');
+
+        var delayCreateScene = function(engine) {
+            var scene = new BABYLON.Scene(engine);
+
+            var light0 = new BABYLON.PointLight('Omni', new BABYLON.Vector3(0, 2, 8), scene);
+
+            var light = new BABYLON.HemisphericLight('hemiLight', new BABYLON.Vector3(-1, 1, 0), scene);
+
+            light.diffuse = new BABYLON.Color3(1, 0, 0);
+            light.specular = new BABYLON.Color3(0, 1, 0);
+            light.groundColor = new BABYLON.Color3(0, 1, 0);
+
+            //scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.02, 1.0);
+            scene.imageProcessingConfiguration.contrast = 1;
+            scene.imageProcessingConfiguration.exposure = 0.6;
+            scene.imageProcessingConfiguration.toneMappingEnabled = true;
+
+            //var camera = new BABYLON.ArcRotateCamera("Camera", 1, 1, 100, new BABYLON.Vector3.Zero(), scene);
+
+            //var camera = new BABYLON.TouchCamera("TouchCamera", new BABYLON.Vector3(0, 0, 10), scene);
+            //camera.rotation = new BABYLON.Vector3(0, Math.PI, 0);
+
+            var camera = new BABYLON.FreeCamera('FreeCamera', new BABYLON.Vector3(0, 0, 5), scene);
+            camera.rotation = new BABYLON.Vector3(0, Math.PI, 0);
+
+            camera.attachControl(canvas, true);
+
+            // Load the model
+            BABYLON.SceneLoader.Append('/PumpStation/', 'obj.glb', scene, function(meshes) {
+                // Create a camera pointing at your model.
+                scene.createDefaultCameraOrLight(true, true, true);
+
+                scene.activeCamera.alpha = 2.5;
+                scene.activeCamera.beta = 1.5;
+                scene.activeCamera.useAutoRotationBehavior = false;
+
+                //scene.activeCamera.target = new BABYLON.Vector3(-12256, 700, 6000);
+                scene.activeCamera.setPosition(new BABYLON.Vector3(10000, 5000, 0));
+
+                //var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+                var helper = scene.createDefaultEnvironment();
+                helper.setMainColor(BABYLON.Color3.Gray());
+
+                var wall = scene.getMeshByName('Box003');
+
+                //wall.visibility=false;
+
+                //Box1
+                var box1 = scene.getMeshByName('Layer_012');
+
+                //Box2
+                var box2 = scene.getMeshByName('Layer_013');
+
+                //Glow Layer for Box1
+                var gl1 = new BABYLON.GlowLayer('glow', scene);
+                gl1.customEmissiveColorSelector = function(mesh, subMesh, material, result) {
+                    if (mesh.name === 'Layer_012') {
+                        result.set(1, 0, 0, 1);
+                    } else {
+                        result.set(0, 0, 0, 0);
+                    }
+                };
+
+                //data for Box1
+                var interval1 = null;
+                webMI.data.subscribe('AGENT.OBJECTS.PumpStation.AlarmValve1', function(e) {
+                    if (e.value) {
+                        clearInterval(interval1);
+                        interval1 = setInterval(function(e) {
+                            gl1.isEnabled = !gl1.isEnabled;
+                        }, 250);
+                    } else {
+                        clearInterval(interval1);
+                        gl1.isEnabled = false;
+                    }
+                });
+
+                //Glow Layer for Box2
+                var gl2 = new BABYLON.GlowLayer('glow', scene);
+                gl2.customEmissiveColorSelector = function(mesh, subMesh, material, result) {
+                    if (mesh.name === 'Layer_013') {
+                        result.set(1, 0, 0, 1);
+                    } else {
+                        result.set(0, 0, 0, 0);
+                    }
+                };
+
+                //data for Box2
+                var interval2 = null;
+                webMI.data.subscribe('AGENT.OBJECTS.PumpStation.AlarmValve2', function(e) {
+                    if (e.value) {
+                        clearInterval(interval2);
+                        interval2 = setInterval(function(e) {
+                            gl2.isEnabled = !gl2.isEnabled;
+                        }, 250);
+                    } else {
+                        clearInterval(interval2);
+                        gl2.isEnabled = false;
+                    }
+                });
+
+                /*webMI.data.subscribeBlock(["AGENT.OBJECTS.testPositions.x","AGENT.OBJECTS.testPositions.y","AGENT.OBJECTS.testPositions.z"], function(e){
+					box2.position.x = e[0].value;
+					box2.position.y = e[1].value;
+					box2.position.z = e[2].value;
+				});*/
+
+                //Glow Layer for predefined - Pump
+
+                var pumpId = 'Layer_equipment025';
+
+                var gl3 = new BABYLON.GlowLayer('glow', scene);
+                gl3.customEmissiveColorSelector = function(mesh, subMesh, material, result) {
+                    if (mesh.name === pumpId) {
+                        result.set(0, 1, 0, 1);
+                    } else {
+                        result.set(0, 0, 0, 0);
+                    }
+                };
+                gl3.intensity = 1;
+
+                webMI.data.subscribe('AGENT.OBJECTS.PumpStation.HeatPump', function(e) {
+                    gl3.isEnabled = e.value;
+                });
+
+                /*---------------*/
+
+                /*----------------*/
+                var heatPump = scene.getMeshByName(pumpId);
+
+                heatPump.actionManager = new BABYLON.ActionManager(scene);
+
+                heatPump.actionManager.registerAction(
+                    new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function(event) {
+                        var pickedMesh = event.meshUnderPointer;
+
+                        webMI.display.openWindow({
+                            display: 'AGENT.OBJECTS.PumpStation.HeatPumpDialog',
+                            query: {
+                                base: 'AGENT.OBJECTS.PumpStation.HeatPump',
+                                titel: 'Heat Pump'
+                            },
+                            extern: false,
+                            height: 350,
+                            menubar: false,
+                            modal: false,
+                            movable: true,
+                            resizable: false,
+                            scrollbars: false,
+                            status: false,
+                            title: '',
+                            toolbar: false,
+                            width: 400,
+                        });
+                    })
+                );
+
+                /*---------------*/
+
+                //Glow Layer for predefined - Motors
+
+                var motorId = 'Object017';
+
+                var gl4 = new BABYLON.GlowLayer('glow', scene);
+                gl4.customEmissiveColorSelector = function(mesh, subMesh, material, result) {
+                    if (mesh.name === motorId) {
+                        result.set(0, 1, 0, 1);
+                    } else {
+                        result.set(0, 0, 0, 0);
+                    }
+                };
+                gl4.intensity = 1;
+                webMI.data.subscribe('AGENT.OBJECTS.PumpStation.Motors', function(e) {
+                    gl4.isEnabled = e.value;
+                });
+
+                /*---------------*/
+
+                /*----------------*/
+                var motors = scene.getMeshByName(motorId);
+                motors.actionManager = new BABYLON.ActionManager(scene);
+
+                motors.actionManager.registerAction(
+                    new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function(event) {
+                        var pickedMesh = event.meshUnderPointer;
+
+                        webMI.display.openWindow({
+                            display: 'AGENT.OBJECTS.PumpStation.HeatPumpDialog',
+                            query: {
+                                base: 'AGENT.OBJECTS.PumpStation.Motors',
+                                titel: 'Motors'
+                            },
+                            extern: false,
+                            height: 350,
+                            menubar: false,
+                            modal: false,
+                            movable: true,
+                            resizable: false,
+                            scrollbars: false,
+                            status: false,
+                            title: '',
+                            toolbar: false,
+                            width: 400,
+                        });
+                    })
+                );
+
+                /*---------------*/
+            });
+
+            return scene;
+        };
+        __createScene = delayCreateScene;
+
+        var engine = new BABYLON.Engine(canvas, true, {
+            preserveDrawingBuffer: true,
+            stencil: true
+        });
+        var scene = delayCreateScene();
+
+        engine.runRenderLoop(function() {
+            if (scene) {
+                scene.render();
+            }
+        });
+
+        // Resize
+        window.addEventListener('resize', function() {
+            engine.resize();
+        });
+    </script>
+</body>
+
+</html>
