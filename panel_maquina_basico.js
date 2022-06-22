@@ -6,50 +6,46 @@ const engine = new BABYLON.Engine( canvas, true );
 var rutaObjeto = "";
 const createScene = function () {
     const scene = new BABYLON.Scene( engine );
-    //BABYLON.SceneLoader.Append( "../../objeto/", "Autoclave.obj", scene, function ( scene ) {
-    BABYLON.SceneLoader.Append( "../../objeto/", "Autoclave.glb", scene, function ( scene ) {
+
+    BABYLON.SceneLoader.Append( "../../objeto/", "auto_oficial_OPT.glb", scene, function ( scene ) {
         scene.createDefaultCameraOrLight( true, true, true );
         scene.activeCamera.alpha += Math.PI;
         scene.useRightHandedSystem = true;
-        // Coleccion -> AutoclaveFull
 
-        var a_cabeza = scene.getMeshByName( 'Autoclave_cabeza' );
-        var a_cuerpo = scene.getMeshByName( 'Autoclave_cuerpo' );
-        var a_patas = scene.getMeshByName( 'Atoclave_patas' );
+        // NOTAS VARIAS
+        // hover con enfasis en los bordes: https://playground.babylonjs.com/#J19GYK#0
+        // evento click con output fuera del canvas: hecho
+        // controles fuera con respuesta dentro del canvas: demo de atvise
 
-        a_cabeza.actionManager = new BABYLON.ActionManager( scene );
-        a_cabeza.actionManager.registerAction(
+        var cacharros_1 = scene.getMeshByName( 'cacharro_1' );
+        var cacharros_2 = scene.getMeshByName( 'cacharro_2' );
+        var tubos = scene.getMeshByName( 'tubos_1' );
+        cacharros_1.actionManager = new BABYLON.ActionManager( scene );
+        cacharros_1.actionManager.registerAction(
             new BABYLON.ExecuteCodeAction( BABYLON.ActionManager.OnPickTrigger, function ( e ) {
                 var obj_seleccionado = e.meshUnderPointer;
-                console.log( "cabeza" );
-
+                alert( 'cacharros azules' );
             } )
         );
-
-        a_cuerpo.actionManager = new BABYLON.ActionManager( scene );
-        a_cuerpo.actionManager.registerAction(
+        cacharros_2.actionManager = new BABYLON.ActionManager( scene );
+        cacharros_2.actionManager.registerAction(
             new BABYLON.ExecuteCodeAction( BABYLON.ActionManager.OnPickTrigger, function ( e ) {
                 var obj_seleccionado = e.meshUnderPointer;
-                console.log( "cuerpo" );
-
+                alert( "cacharros rojos" );
             } )
         );
-
-        a_patas.actionManager = new BABYLON.ActionManager( scene );
-        a_patas.actionManager.registerAction(
+        tubos.actionManager = new BABYLON.ActionManager( scene );
+        tubos.actionManager.registerAction(
             new BABYLON.ExecuteCodeAction( BABYLON.ActionManager.OnPickTrigger, function ( e ) {
                 var obj_seleccionado = e.meshUnderPointer;
-                console.log( "cuerpo" );
-
+                alert( "tubos" );
             } )
         );
-
-
 
     } );
     const camera = new BABYLON.ArcRotateCamera( "camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3( 0, 0, 0 ) );
     camera.attachControl( canvas, true );
-    const light = new BABYLON.HemisphericLight( "light", new BABYLON.Vector3( 1, 1, 0 ) );
+    const light = new BABYLON.HemisphericLight( "light", new BABYLON.Vector3( 1, 1, -10 ) );
     return scene;
 };
 const scene = createScene();
@@ -69,12 +65,3 @@ window.addEventListener( "resize", function () {
 //https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js
 //https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js
 //https://cdn.babylonjs.com/loaders/babylon.glTFFileLoader.js
-
-
-//NOTAS:
-//las animaciones y los ids de los objetos pasan de blender a babylon sin problemas
-//el elementp camara de blender da totalmente igual
-//los ids son importantes para captar eventos desde babylon
-//se pueden intercalar funciones de atvise y babylon 
-//necesitamos un PC mas potente para blender eso si
-//falta saber porque leches nos sale siempre una resolucion de mierda
