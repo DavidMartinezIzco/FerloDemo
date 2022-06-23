@@ -43,36 +43,47 @@
             const createScene = function () {
                 const scene = new BABYLON.Scene( engine );
 
-                BABYLON.SceneLoader.Append( "../../objeto/", "auto_oficial_plano.glb", scene, function ( scene ) {
+                BABYLON.SceneLoader.Append( "../../objeto/", "autoclave_remake.glb", scene, function ( scene ) {
                     scene.createDefaultCameraOrLight( true, true, true );
                     scene.activeCamera.alpha += Math.PI;
                     scene.useRightHandedSystem = true;
                     // Coleccion -> Autoclave
 
-                    var valvulas_azules_1 = scene.getMeshByName( 'cacharro_1' );
-                    var cacharros_rojos = scene.getMeshByName( 'cacharro_2' );
-                    var valvulas_azules_2 = scene.getMeshByName( 'cacharro_3' );
-                    var motor = scene.getMeshByName( 'motor' );
-                    var tubos = scene.getMeshByName( 'tubos' );
-
-
-                    valvulas_azules_1.actionManager = new BABYLON.ActionManager( scene );
-                    valvulas_azules_1.actionManager.registerAction(
+                    //llaves 1
+                    var llaves_1 = scene.getMeshByName( 'llaves 1' );
+                    llaves_1.actionManager = new BABYLON.ActionManager( scene );
+                    llaves_1.actionManager.registerAction(
                         new BABYLON.ExecuteCodeAction( BABYLON.ActionManager.OnPickTrigger, function ( e ) {
                             // var obj_seleccionado = e.meshUnderPointer;
                             // console.log( obj_seleccionado );
-                            var info = "Nombre componente: valvulas azules 1";
+                            var info = "Nombre componente: llaves 1";
                             var estado = "Estado: OK";
                             mostrarProblema();
                             webMI.gfx.setText( "txt_info", info );
                             webMI.gfx.setText( "txt_estado", estado );
                         } )
                     );
-                    valvulas_azules_2.actionManager = new BABYLON.ActionManager( scene );
-                    valvulas_azules_2.actionManager.registerAction(
+                    //llaves 2
+                    var llaves_2 = scene.getMeshByName( 'llaves 2' );
+                    llaves_2.actionManager = new BABYLON.ActionManager( scene );
+                    llaves_2.actionManager.registerAction(
                         new BABYLON.ExecuteCodeAction( BABYLON.ActionManager.OnPickTrigger, function ( e ) {
                             // var obj_seleccionado = e.meshUnderPointer;
-                            var info = "Nombre componente: valvulas azules 2";
+                            // console.log( obj_seleccionado );
+                            var info = "Nombre componente: llaves 2";
+                            var estado = "Estado: OK";
+                            mostrarProblema();
+                            webMI.gfx.setText( "txt_info", info );
+                            webMI.gfx.setText( "txt_estado", estado );
+                        } )
+                    );
+                    //motor
+                    var motor = scene.getMeshByName( 'motor' );
+                    motor.actionManager = new BABYLON.ActionManager( scene );
+                    motor.actionManager.registerAction(
+                        new BABYLON.ExecuteCodeAction( BABYLON.ActionManager.OnPickTrigger, function ( e ) {
+                            // var obj_seleccionado = e.meshUnderPointer;
+                            var info = "Nombre componente: motor";
                             var estado = "Estado: OK";
 
                             mostrarProblema();;
@@ -80,50 +91,74 @@
                             webMI.gfx.setText( "txt_estado", estado );
                         } )
                     );
-                    cacharros_rojos.actionManager = new BABYLON.ActionManager( scene );
-                    cacharros_rojos.actionManager.registerAction(
+                    //porton
+                    var puerta = scene.getMeshByName( 'porton' );
+                    puerta.actionManager = new BABYLON.ActionManager( scene );
+                    puerta.actionManager.registerAction(
                         new BABYLON.ExecuteCodeAction( BABYLON.ActionManager.OnPickTrigger, function ( e ) {
                             // var obj_seleccionado = e.meshUnderPointer;
-                            var info = "Nombre componente: cacharros rojos";
+                            var info = "Nombre componente: compuerta";
                             var estado = "Estado: OK";
                             mostrarProblema();
                             webMI.gfx.setText( "txt_info", info );
                             webMI.gfx.setText( "txt_estado", estado );
                         } )
                     );
+                    //tuberia
+                    var tubos = scene.getMeshByName( 'tuberia' );
                     tubos.actionManager = new BABYLON.ActionManager( scene );
                     tubos.actionManager.registerAction(
                         new BABYLON.ExecuteCodeAction( BABYLON.ActionManager.OnPickTrigger, function ( e ) {
                             // var obj_seleccionado = e.meshUnderPointer;
-                            var info = "Nombre componente: tubos";
+                            var info = "Nombre componente: tuberia";
                             var estado = "Estado: OK";
                             mostrarProblema();
                             webMI.gfx.setText( "txt_info", info );
                             webMI.gfx.setText( "txt_estado", estado );
                         } )
                     );
-                    motor.actionManager = new BABYLON.ActionManager( scene );
-                    motor.actionManager.registerAction(
+                    //valvulas 1
+                    var valvulas_1 = scene.getMeshByName( 'valvulas 1' );
+                    valvulas_1.actionManager = new BABYLON.ActionManager( scene );
+                    valvulas_1.actionManager.registerAction(
                         new BABYLON.ExecuteCodeAction( BABYLON.ActionManager.OnPickTrigger, function ( e ) {
                             // var obj_seleccionado = e.meshUnderPointer;
-                            var info = "Nombre componente: motor";
+                            var info = "Nombre componente: valvulas 1";
                             var estado = "Estado: OK";
                             mostrarProblema();
                             webMI.gfx.setText( "txt_info", info );
                             webMI.gfx.setText( "txt_estado", estado );
                         } )
                     );
+                    //valvulas 2
+                    var valvulas_2 = scene.getMeshByName( 'valvulas 2' );
+                    valvulas_2.actionManager = new BABYLON.ActionManager( scene );
+                    valvulas_2.actionManager.registerAction(
+                        new BABYLON.ExecuteCodeAction( BABYLON.ActionManager.OnPickTrigger, function ( e ) {
+                            // var obj_seleccionado = e.meshUnderPointer;
+                            var info = "Nombre componente: valvulas 2";
+                            var estado = "Estado: OK";
+                            mostrarProblema();
+                            webMI.gfx.setText( "txt_info", info );
+                            webMI.gfx.setText( "txt_estado", estado );
+                        } )
+                    );
+
+
                     var defMaterial = new BABYLON.StandardMaterial( "defMaterial", scene );
                     if ( encendido == true ) {
                         defMaterial.diffuseColor = new BABYLON.Color3.FromHexString( "#2ecc71" );
                     } else {
                         defMaterial.diffuseColor = new BABYLON.Color3.FromHexString( "#c21d11" );
                     }
-                    valvulas_azules_1.material = defMaterial;
-                    valvulas_azules_2.material = defMaterial;
-                    cacharros_rojos.material = defMaterial;
+                    llaves_1.material = defMaterial;
+                    llaves_2.material = defMaterial;
                     motor.material = defMaterial;
+                    puerta.material = defMaterial;
                     tubos.material = defMaterial;
+                    valvulas_1.material = defMaterial;
+                    valvulas_2.material = defMaterial;
+
                 } );
                 const camera = new BABYLON.ArcRotateCamera( "camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3( 0, 0, 0 ) );
                 camera.attachControl( canvas, true );
