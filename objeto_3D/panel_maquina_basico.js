@@ -3,6 +3,7 @@
     var problema = false;
     var encendido = false;
     webMI.addOnload( function () {
+        renderizar();
         webMI.gfx.setText( "txt_info", "---" );
 
         webMI.addEvent( "btn_on", "click", function ( e ) {
@@ -112,6 +113,17 @@
                             webMI.gfx.setText( "txt_estado", estado );
                         } )
                     );
+                    var defMaterial = new BABYLON.StandardMaterial( "defMaterial", scene );
+                    if ( encendido == true ) {
+                        defMaterial.diffuseColor = new BABYLON.Color3.FromHexString( "#2ecc71" );
+                    } else {
+                        defMaterial.diffuseColor = new BABYLON.Color3.FromHexString( "#c21d11" );
+                    }
+                    valvulas_azules_1.material = defMaterial;
+                    valvulas_azules_2.material = defMaterial;
+                    cacharros_rojos.material = defMaterial;
+                    motor.material = defMaterial;
+                    tubos.material = defMaterial;
                 } );
                 const camera = new BABYLON.ArcRotateCamera( "camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3( 0, 0, 0 ) );
                 camera.attachControl( canvas, true );
@@ -119,22 +131,8 @@
                 return scene;
             };
 
-
             const scene = createScene();
-            console.log( 'entrando el el fetch' );
-            for ( var objeto in scene.meshes ) {
-                var meshObjeto = scene.meshes[ objeto ];
-                if ( meshObjeto.id != 'resto' && meshObjeto.id != '__root__' ) {
-                    console.log( encendido );
-                    var mat = new BABYLON.StandardMaterial( 'material', scene );
-                    if ( encendido == true ) {
-                        mat.diffusecolor = BABYLON.Color3.Green();
-                    } else {
-                        mat.diffusecolor = BABYLON.Color3.Red();
-                    }
-                    scene.meshes[ objeto ].material = mat;
-                }
-            }
+
             engine.runRenderLoop( function () {
                 scene.render();
                 engine.resize();
@@ -145,11 +143,7 @@
 
         }
 
-
     } );
-
-
-
 
     //recursos externos 
 
